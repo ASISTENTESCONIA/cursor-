@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001; // Changed to 3001 to avoid conflict with Vite
 
 // Middleware
 app.use(express.json());
@@ -29,23 +29,14 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
 
-// Serve static files and handle routing
+// In development, only serve API routes
+// Vite will handle the frontend
 if (process.env.NODE_ENV === 'production') {
   // Production: serve built files
   app.use(express.static(path.join(__dirname, '../dist')));
   
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
-  });
-} else {
-  // Development: serve from client directory
-  app.use(express.static(path.join(__dirname, '../client')));
-  
-  // Serve index.html for all non-API routes
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(__dirname, '../client/index.html'));
-    }
   });
 }
 
@@ -56,9 +47,6 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`API Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`Frontend served from: ${path.join(__dirname, '../client')}`);
-  }
 });

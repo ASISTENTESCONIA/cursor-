@@ -6,7 +6,9 @@
   "scripts": {
     "build": "vite build",
     "start": "NODE_ENV=production tsx server/index.ts",
-    "dev": "NODE_ENV=development tsx server/index.ts"
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "NODE_ENV=development tsx server/index.ts",
+    "dev:client": "vite"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -48,6 +50,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "concurrently": "^9.1.0",
     "connect-pg-simple": "^10.0.0",
     "date-fns": "^3.6.0",
     "drizzle-orm": "^0.39.1",
