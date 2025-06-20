@@ -24,17 +24,28 @@ app.use(session({
   }
 }));
 
-// API routes placeholder
+// API routes
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
 
-// Serve static files in production
+// Serve static files and handle routing
 if (process.env.NODE_ENV === 'production') {
+  // Production: serve built files
   app.use(express.static(path.join(__dirname, '../dist')));
   
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
+  });
+} else {
+  // Development: serve from client directory
+  app.use(express.static(path.join(__dirname, '../client')));
+  
+  // Serve index.html for all non-API routes
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(__dirname, '../client/index.html'));
+    }
   });
 }
 
@@ -47,4 +58,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`Frontend served from: ${path.join(__dirname, '../client')}`);
+  }
 });
